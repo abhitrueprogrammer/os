@@ -10,7 +10,6 @@
 #error "This needs to be compiled with a ix86-elf compiler"
 #endif
 
-/* Hardware text mode color constants. */
 enum vga_color
 {
 	VGA_COLOR_BLACK = 0,
@@ -116,10 +115,14 @@ void terminal_writestring(const char *data)
 
 void kernel_main(void)
 {
-	terminal_initialize();
+    terminal_initialize();
 
-	terminal_writestring("OS project by Abhinav Pant and Cavin Monis\n\n");
-	terminal_writestring("This is an OS created from scratch and compiled with a cross-compiler. Both the boot assembly file and the kernel file were linked together to produce the final OS. It was booted using the QEMU VM\n");
-	terminal_writestring("-------------------\n");
-	terminal_writestring("Hello, Karthika Ma'am\n");
+    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_CYAN, VGA_COLOR_BLACK));
+    terminal_writestring("OS project by Abhinav Pant and Cavin Monis\n\n");
+
+    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_MAGENTA, VGA_COLOR_BLACK));
+    terminal_writestring("Hello, Karthika Ma'am,\n");
+    terminal_setcolor(vga_entry_color(VGA_COLOR_LIGHT_GREEN, VGA_COLOR_BLACK));
+    terminal_writestring("This is an OS created from scratch and compiled with a cross-compiler. Both the boot assembly file and the kernel file were linked together to produce the final OS. It was booted using the QEMU VM\n");
+
 }
