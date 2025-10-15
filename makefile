@@ -13,16 +13,19 @@ build-i686: buildenv
 	sudo docker run --rm -it -v $(PWD):/root/env techiekeith/osdev-buildenv-i686 make kernel-build
 
 # 3. Build kernel using cross-compiler inside container
-kernel-build: boot.o kernel.o link check
+kernel-build: boot.o kernel.o scheduler.o link check
 
 boot.o: boot.s
 	i686-elf-as boot.s -o boot.o
 
-kernel.o: kernel.c
+kernel.o: kernel.c scheduler.h
 	i686-elf-gcc -c kernel.c -o kernel.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
 
+scheduler.o: scheduler.c scheduler.h
+	i686-elf-gcc -c scheduler.c -o scheduler.o -std=gnu99 -ffreestanding -O2 -Wall -Wextra
+
 link:
-	i686-elf-gcc -T linker.ld -o myos.bin -ffreestanding -O2 -nostdlib boot.o kernel.o -lgcc
+	i686-elf-gcc -T linker.ld -o myos.bin -ffreestanding -O2 -nostdlib boot.o kernel.o scheduler.o -lgcc
 
 check:
 	@if grub-file --is-x86-multiboot myos.bin; then \
@@ -31,10 +34,10 @@ check:
 	  echo "the file is not multiboot"; \
 	fi
 
-# Optional: QEMU run target
+#  QEMU run target
 run:
 	qemu-system-i386 -kernel myos.bin
 
 # Clean object files and binary
 clean:
-	rm -f boot.o kernel.o myos.bin
+	rm -f boot.o kernel.o scheduler.o myos.bin
